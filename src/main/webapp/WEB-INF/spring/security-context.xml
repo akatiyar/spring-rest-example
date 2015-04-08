@@ -1,0 +1,38 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<http create-session="stateless" entry-point-ref="unauthorizedEntryPoint">
+		<custom-filter after="SECURITY_CONTEXT_FILTER" ref="tokenBasedAuthenticationFilter" />
+		<intercept-url pattern="/**" requires-channel="https"
+			access="ROLE_USER" />
+		<anonymous enabled="false" />
+	</http>
+
+	<beans:bean id="unauthorizedEntryPoint"
+		class="local.akatiyar.springrest.security.UnauthorizedEntryPoint" />
+
+	<beans:bean id="tokenBasedAuthenticationFilter"
+		class="local.akatiyar.springrest.security.TokenBasedAuthenticationFilter">
+		<beans:constructor-arg ref="authenticationManager" />
+	</beans:bean>
+
+	<beans:bean name="bcryptEncoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+	<authentication-manager alias="authenticationManager">
+		<authentication-provider>
+			<password-encoder ref="bcryptEncoder" />
+			<user-service>
+				<user name="jimi" password="$2a$10$0Vo20xINZgWU8q3cPZ08be0kqF.isDwJ.hg0BmD9LhWUn6WtZ5H2y"
+					authorities="ROLE_USER, ROLE_ADMIN" />
+				<user name="bob" password="$2a$10$xiWbBW7noiUwG9WpTtU0d.spmcHCVb/iw6Wk5R6x3BniwdR.aKoDi"
+					authorities="ROLE_USER" />
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
+
+</beans:beans>
